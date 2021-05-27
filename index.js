@@ -1,6 +1,7 @@
 function parse(template) {
   // 拆开语义化 template拆成数组
   const tokens = tokenizer(template);
+  console.log(tokens);
   // 数组->树 AST树
   // 数组变成属性结构
   let cur = 0;
@@ -13,7 +14,7 @@ function parse(template) {
   while (cur < tokens.length) {
     ast.children.push(walk());
   }
-
+  return ast;
   function walk() {
     let token = tokens[cur];
     if (token.type === 'tagstart') {
@@ -98,8 +99,13 @@ function transform() {}
 
 function genrate(ast) {}
 
+function ll(data) {
+  console.log(JSON.stringify(data, null, 2));
+}
+
 function compile(template) {
   let ast = parse(template);
+  ll(ast);
   // transform(ast)
   // const code = genrate(ast)
   // return code
