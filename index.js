@@ -85,7 +85,7 @@ function tokenizer(input) {
   function push() {
     if (val) {
       if (type === 'tagstart') val = val.slice(1); // 过滤<
-      if (type === 'tagend') val = val.slice(2);
+      if (type === 'tagend') val = val.slice(2); // 过滤</
       tokens.push({
         type,
         val
