@@ -11,12 +11,11 @@ function parse(template) {
   };
 
   while (cur < tokens.length) {
-    ast.children.push(walk);
+    ast.children.push(walk());
   }
 
   function walk() {
     let token = tokens[cur];
-    if (!token) return;
     if (token.type === 'tagstart') {
       // 开始标签新建一个node
       let node = {
