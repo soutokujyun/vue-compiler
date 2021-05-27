@@ -2,6 +2,29 @@ function parse(template) {
   // 拆开语义化 template拆成数组
   const tokens = tokenizer(template);
   console.log(tokens);
+  // 数组->树 AST树
+  // 数组变成属性结构
+  let cur = 0;
+  let ast = {
+    type: 'root',
+    props: [],
+    children: []
+  };
+
+  while (cur < tokens.length) {
+    let token = tokens[cur];
+    if (token.type === 'tagstart') {
+      // 开始标签新建一个node
+      let node = {
+        type: 'element',
+        tag: token.val,
+        props: [],
+        children: []
+      };
+    }
+  }
+
+  function walk() {}
 }
 
 function tokenizer(input) {
