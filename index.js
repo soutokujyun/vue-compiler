@@ -1,7 +1,6 @@
 function parse(template) {
   // 拆开语义化 template拆成数组
   const tokens = tokenizer(template);
-  console.log(tokens);
   // 数组->树 AST树
   // 数组变成属性结构
   let cur = 0;
@@ -12,7 +11,12 @@ function parse(template) {
   };
 
   while (cur < tokens.length) {
+    ast.children.push(walk);
+  }
+
+  function walk() {
     let token = tokens[cur];
+    if (!token) return;
     if (token.type === 'tagstart') {
       // 开始标签新建一个node
       let node = {
@@ -21,10 +25,34 @@ function parse(template) {
         props: [],
         children: []
       };
+      token = tokens[++cur];
+      // 往下走到tagend or tagstart之中，都是自己的内容
+      while (token.type !== 'tagend') {
+        if (token.type === 'props') {
+          node.props.push(walk());
+        } else {
+          node.children.push(walk());
+        }
+        token = tokens[cur];
+      }
+      cur++;
+      return node;
+    }
+
+    if (token.type === 'tagend') {
+      cur++;
+    }
+    if (token.type === 'text') {
+      cur++;
+      return token;
+    }
+    if (token.type === 'props') {
+      cur++;
+      // id="name"
+      const [key, val] = token.val.split('=');
+      return { key, val };
     }
   }
-
-  function walk() {}
 }
 
 function tokenizer(input) {
