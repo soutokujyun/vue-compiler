@@ -118,13 +118,13 @@ function traverse(ast, context) {
       // 先不整位运算，整个对象好理解
       ast.flag = { props: false, class: false, event: false }; // 默认都是静态的
       ast.props = ast.props.map(prop => {
-        const { key, value } = prop;
+        const { key, val } = prop;
         if (key[0] === '@') {
           // 事件
           ast.flag.event = true; // 后续做节点对比的时候，需要对事件进行diff, 先removeEventListener, 再addEventListener
           return {
             key: 'on' + key[1].toUpperCase() + key.slice(2), // @click => onClick
-            value
+            val: val.replace(/['"]/g, '')
           };
         }
         if (key[0] === ':') {
@@ -132,7 +132,7 @@ function traverse(ast, context) {
           ast.flag.props = true;
           return {
             key: key.slice(1),
-            value
+            val: val.replace(/['"]/g, '')
           };
         }
         if (key.startsWith('v-')) {
@@ -157,7 +157,7 @@ function traverse(ast, context) {
 
 function genrate(ast) {
   const { helpers } = ast;
-  let code = `import {${[...helpers].map(v => v + ' as _' + v)}} from "vue"\n
+  let code = `import {${[...helpers].map(v => v + ' as _' + v)}} from "vue"
   export function render(_ctx, _cache) {
     return (_openBlock(), ${ast.children.map(node => walk(node))})
   }
@@ -174,7 +174,7 @@ function genrate(ast) {
             .reduce((ret, p) => {
               if (flag.props) {
                 // 属性是动态的
-                ret.push(p.key + ':_ctx.' + p.val.replace(/['"]/g, ''));
+                ret.push(p.key + ':_ctx.' + p.val);
               } else {
                 ret.push(p.key + ':' + p.val);
               }
